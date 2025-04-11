@@ -1,4 +1,10 @@
-.addModal {
-  margin: auto;
-  margin-top: 140px;
+.modal-overlay {
+  .add-modal {
+    margin: auto;
+    margin-top: 140px;
+
+    textarea {
+      resize: none;
+    }
+  }
 }
