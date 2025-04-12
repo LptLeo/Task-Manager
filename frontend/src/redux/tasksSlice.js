@@ -35,8 +35,13 @@ const tasksSlice = createSlice({
     tasksData: [],
     status: "idle",
     error: null,
+    search: "",
   },
-  reducers: {},
+  reducers: {
+    setSearch: (state, { payload }) => {
+      state.search = payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getTasks.pending, (state) => {
@@ -69,4 +74,5 @@ const tasksSlice = createSlice({
   },
 });
 
+export const { setSearch } = tasksSlice.actions;
 export default tasksSlice.reducer;

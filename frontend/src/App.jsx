@@ -4,14 +4,15 @@ import Modal from "./components/Modal";
 import TaskList from "./components/TaskList";
 import { openModal } from "./redux/modalSlice";
 import { useDispatch } from "react-redux";
+import { setSearch } from "./redux/tasksSlice";
 
 function App() {
   const dispatch = useDispatch();
+  const [searchValue, setSearchValue] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const activeModal = (value) => {
-    setShowModal(value);
-  };
+  const activeModal = (value) => setShowModal(value);
+  const handleSearchClick = () => dispatch(setSearch(searchValue));
 
   return (
     <>
@@ -23,13 +24,20 @@ function App() {
             <header className="toolbar w-100 d-flex justify-content-center">
               <div className="d-flex w-100 mx-1">
                 <input
+                  onChange={(e) => {
+                    setSearchValue(e.target.value);
+                  }}
+                  value={searchValue}
                   className="form-control rounded-end-0"
                   type="text"
                   placeholder="Filtrar"
                 />
                 <button
+                  onClick={() => {
+                    handleSearchClick();
+                  }}
                   className="btn btn-secondary rounded-start-0"
-                  type="submit"
+                  type="button"
                 >
                   <i className="bi bi-search"></i>
                 </button>
