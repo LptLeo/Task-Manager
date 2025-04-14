@@ -29,6 +29,14 @@ export const deleteTask = createAsyncThunk("tasks/deleteTask", async (id) => {
   return id;
 });
 
+export const deleteTasks = createAsyncThunk(
+  "tasks/deleteTasks",
+  async (tasks) => {
+    await axios.delete(API_URL, { data: tasks });
+    return tasks;
+  }
+);
+
 const tasksSlice = createSlice({
   name: "tasks",
   initialState: {
@@ -36,10 +44,28 @@ const tasksSlice = createSlice({
     status: "idle",
     error: null,
     search: "",
+    selectingStats: false,
+    selectedTasks: [],
   },
   reducers: {
     setSearch: (state, { payload }) => {
       state.search = payload;
+    },
+    toggleSelectingStats: (state) => {
+      state.selectingStats = !state.selectingStats;
+    },
+    addTask: (state, { payload }) => {
+      if (!state.selectedTasks.includes(payload)) {
+        state.selectedTasks.push(payload);
+      }
+    },
+    removeTask: (state, { payload }) => {
+      state.selectedTasks = state.selectedTasks.filter(
+        (task) => task._id === payload
+      );
+    },
+    clearSelectedTasks: (state) => {
+      state.selectedTasks = [];
     },
   },
   extraReducers: (builder) => {
@@ -68,11 +94,23 @@ const tasksSlice = createSlice({
       .addCase(deleteTask.fulfilled, (state, { payload }) => {
         state.status = "succeeded";
         state.tasksData = state.tasksData.filter(
-          (item) => item._id !== payload
+          (task) => task._id !== payload
+        );
+      })
+      .addCase(deleteTasks.fulfilled, (state, { payload }) => {
+        state.status = "succeeded";
+        state.tasksData = state.tasksData.filter(
+          (task) => !payload.includes(task._id)
         );
       });
   },
 });
 
-export const { setSearch } = tasksSlice.actions;
+export const {
+  setSearch,
+  toggleSelectingStats,
+  addTask,
+  removeTask,
+  clearSelectedTasks,
+} = tasksSlice.actions;
 export default tasksSlice.reducer;

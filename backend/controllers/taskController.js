@@ -41,7 +41,7 @@ class TaskController {
         .status(200)
         .json({ message: "Tarefa atualizada com sucesso", updatedTask });
     } catch (error) {
-      res.status(500).json({ message: `Falha ao obter tarefa - ${error}` });
+      res.status(500).json({ message: `Falha ao atualizar tarefa - ${error}` });
     }
   }
 
@@ -51,7 +51,19 @@ class TaskController {
       await Task.findByIdAndDelete(id);
       res.status(200).json({ message: "Tarefa atualizada com sucesso" });
     } catch (error) {
-      res.status(500).json({ message: `Falha ao obter tarefa - ${error}` });
+      res.status(500).json({ message: `Falha ao excluir tarefa - ${error}` });
+    }
+  }
+
+  static async deleteTasks(req, res) {
+    try {
+      const idsArray = req.body;
+      await Task.deleteMany({ _id: { $in: idsArray } });
+      res.status(200).json({ message: "Tarefas excluídas com sucesso" });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: `Falha ao excluir as tarefas - ${error}` });
     }
   }
 }

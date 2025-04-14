@@ -3,11 +3,19 @@ import "./App.scss";
 import Modal from "./components/Modal";
 import TaskList from "./components/TaskList";
 import { openModal } from "./redux/modalSlice";
-import { useDispatch } from "react-redux";
-import { setSearch } from "./redux/tasksSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSearch,
+  toggleSelectingStats,
+  clearSelectedTasks,
+  deleteTasks,
+} from "./redux/tasksSlice";
 
 function App() {
   const dispatch = useDispatch();
+  const selecting = useSelector((state) => state.tasks.selectingStats);
+  const selected = useSelector((state) => state.tasks.selectedTasks);
+
   const [searchValue, setSearchValue] = useState("");
   const [showModal, setShowModal] = useState(false);
 
@@ -42,15 +50,37 @@ function App() {
                   <i className="bi bi-search"></i>
                 </button>
               </div>
+              {selecting ? (
+                <button
+                  onClick={() => {
+                    dispatch(deleteTasks(selected));
+                    dispatch(toggleSelectingStats());
+                  }}
+                  className="btn btn-danger mx-1"
+                  title="Deletar"
+                  type="button"
+                >
+                  <i className="bi bi-trash"></i>
+                </button>
+              ) : (
+                <button
+                  onClick={() => dispatch(openModal())}
+                  className="btn btn-success mx-1"
+                  title="Adicionar"
+                  type="button"
+                >
+                  <i className="bi bi-plus-lg"></i>
+                </button>
+              )}
               <button
-                className="btn btn-success mx-1"
-                title="Adicionar"
-                onClick={() => dispatch(openModal())}
+                onClick={() => {
+                  dispatch(toggleSelectingStats());
+                  !selecting && dispatch(clearSelectedTasks());
+                }}
+                className="btn btn-primary mx-1"
+                title="Selecionar"
               >
-                <i className="bi bi-plus-lg"></i>
-              </button>
-              <button className="btn btn-primary mx-1" title="Selecionar">
-                <i className="bi bi-check2-square"></i>
+                <i className="bi bi-check-square"></i>
               </button>
             </header>
             <TaskList />

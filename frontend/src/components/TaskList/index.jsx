@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTask, getTasks } from "../../redux/tasksSlice";
+import {
+  addTask,
+  deleteTask,
+  getTasks,
+  removeTask,
+} from "../../redux/tasksSlice";
 import "./TaskList.scss";
 import { openModal, selectTask, setUpdating } from "../../redux/modalSlice";
 
@@ -8,6 +13,8 @@ const TaskList = () => {
   const dispatch = useDispatch();
   const { tasksData, status, error } = useSelector((state) => state.tasks);
   const search = useSelector((state) => state.tasks.search);
+  const selecting = useSelector((state) => state.tasks.selectingStats);
+  const selected = useSelector((state) => state.tasks.selectedTasks);
 
   useEffect(() => {
     dispatch(getTasks());
@@ -32,24 +39,52 @@ const TaskList = () => {
               <span>{task.description}</span>
             </div>
             <div className="d-flex flex-column">
-              <button
-                onClick={() => dispatch(deleteTask(task._id))}
-                className="btn btn-danger rounded-circle rounded-start-0 rounded-bottom-0 h-50"
-                title="Deletar"
-              >
-                <i className="bi bi-trash"></i>
-              </button>
-              <button
-                onClick={() => {
-                  dispatch(selectTask(task));
-                  dispatch(openModal());
-                  dispatch(setUpdating(true));
-                }}
-                className="btn btn-secondary rounded-circle rounded-start-0 rounded-top-0 h-50"
-                title="Editar"
-              >
-                <i className="bi bi-pencil-square"></i>
-              </button>
+              {selecting ? (
+                <button
+                  className="btn btn-secondary rounded-circle rounded-start-0 h-100"
+                  title="Deletar"
+                  type="button"
+                >
+                  {selected.includes(task._id) ? (
+                    <i
+                      onClick={() => {
+                        dispatch(removeTask(task._id));
+                      }}
+                      className="bi bi-check-square"
+                    ></i>
+                  ) : (
+                    <i
+                      onClick={() => {
+                        dispatch(addTask(task._id));
+                      }}
+                      className="bi bi-square"
+                    ></i>
+                  )}
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => dispatch(deleteTask(task._id))}
+                    className="btn btn-danger rounded-circle rounded-start-0 rounded-bottom-0 h-50"
+                    title="Deletar"
+                    type="button"
+                  >
+                    <i className="bi bi-trash"></i>
+                  </button>
+                  <button
+                    onClick={() => {
+                      dispatch(selectTask(task));
+                      dispatch(openModal());
+                      dispatch(setUpdating(true));
+                    }}
+                    className="btn btn-secondary rounded-circle rounded-start-0 rounded-top-0 h-50"
+                    title="Editar"
+                    type="button"
+                  >
+                    <i className="bi bi-pencil-square"></i>
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))
